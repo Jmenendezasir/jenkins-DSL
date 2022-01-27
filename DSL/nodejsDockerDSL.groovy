@@ -14,7 +14,7 @@ job('App-Nodejs-Docker-DSL') {
     }
     steps {
         dockerBuildAndPublish {
-            repositoryName('jmenendezara/jenkins-DSL')
+            repositoryName('jmenendezara/jenkins-dsl')
             tag('${GIT_REVISION,length=7}')
             registryCredentials('docker-hub')
             forcePull(false)
