@@ -21,5 +21,6 @@ job('App-Nodejs-Docker-DSL') {
             createFingerprints(false)
             skipDecorate()
         }
+    shell("bash run.sh")
     }
 }
