@@ -1,0 +1,30 @@
+node {
+   def gitcommit
+   stage('Verificacion SCM y Test en Docker') {
+     checkout scm
+     sh "git rev-parse --short HEAD > .git/commit-id"
+     gitcommit = readFile('.git/commit-id').trim()
+   }
+   stage('test') {
+     def contenedortest = docker.image('node:4.6')
+     contenedortest.pull()
+     contenedortest.inside("-u root:root") {
+       sh 'npm install --only=dev'
+       sh 'npm test'
+     }
+   }                   
+   stage('Docker Build & Push') {
+     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
+      def nuestraapp = docker.build("morgadoberruezo/appnodejs:${gitcommit}", ".")
+      nuestraapp.push()
+     }
+   }
+   stage('run') {
+     def contenedortest = docker.image('morgadoberruezo/appnodejs:cade8cc')
+     contenedortest.pull()
+     contenedortest.inside {
+       sh 'echo run ...'
+       sh 'npm start'
+     }
+   }    
+}
